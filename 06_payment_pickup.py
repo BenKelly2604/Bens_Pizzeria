@@ -1,0 +1,1 @@
+total price and payment type + name + pick up time + end
