@@ -10,6 +10,28 @@ no_synonyms = {
     "no": ["nope", "nah", "never", "nay", "n"]
 }
 
+valid_order = False  # Initialize valid_order
+consecutive_invalid_responses = 0
+
+
+def words_to_numbers(word):
+    # Define a dictionary to map words to numbers
+    word_to_number = {
+        "one": 1,
+        "two": 2,
+        "three": 3,
+        "four": 4,
+        "five": 5,
+        "six": 6,
+        "seven": 7,
+        "eight": 8,
+        "nine": 9,
+        "ten": 10,
+    }
+    # Try to convert the word to a number, default to 0 if not found
+    return word_to_number.get(word.lower(), 0)
+
+
 pizza_menu = {
     "1": "Ham and cheese",
     "2": "Margherita",
@@ -33,6 +55,8 @@ extra_toppings_menu = {
     "5": "Tomato sauce +$0.50",
 }
 
+# Function to convert numbers to words
+
 
 def number_to_words(num):
     units = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
@@ -41,12 +65,10 @@ def number_to_words(num):
         return units[num]
 
 
-valid_order = False  # Initialize valid_order
-consecutive_invalid_responses = 0
-
-
 def menu_pizza():
     global order_placed, order_summary, menu_displayed, valid_order
+
+    first_mistake = True  # Flag to track the first mistake
 
     while True:
         if order_placed:
@@ -63,7 +85,7 @@ def menu_pizza():
                 menu_displayed = False
             elif confirmation == 'hangup':
                 print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
-                exit()
+                break
             else:
                 final_confirmation = input("\nSorry, could you try that again? ").lower()
                 if final_confirmation == 'yes':
@@ -73,7 +95,7 @@ def menu_pizza():
                     exit()
                 elif final_confirmation == 'hangup':
                     print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
-                    exit()
+                    break
                 else:
                     print(
                         "\nSorry, I don't understand what you're trying to say here. Have a good rest of your day and "
@@ -86,7 +108,7 @@ def menu_pizza():
 
         if quantity_response == "hangup":
             print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
-            exit()
+            break
 
         if quantity_response.isdigit():
             quantity = int(quantity_response)
@@ -110,6 +132,7 @@ def menu_pizza():
                 valid_order = True  # Flag to check if the order is valid
 
                 for i in range(quantity):
+
                     pizza_type = None  # Initialize pizza_type for this iteration
 
                     while True:
@@ -118,7 +141,7 @@ def menu_pizza():
                             f"What type for pizza {number_to_words(i + 1)}? (Enter a number or name): ").lower()
                         if response == 'hangup':
                             print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
-                            exit()
+                            break
                         if response in pizza_menu:
                             pizza_type = pizza_menu[response]
                             if pizza_type not in order_summary:
@@ -126,29 +149,17 @@ def menu_pizza():
                             break
                         else:
                             print()
+                            print("I'm sorry, I don't understand what you're trying to say.")
+                            print()
                             retry_response = input("Would you like to try that again? (yes/no): ").lower()
-
-                            if retry_response == 'yes' or retry_response in yes_synonyms.get("yes", []):
-                                continue
-
-                            if retry_response == 'no' or retry_response in no_synonyms.get("no", []):
+                            print()
+                            if retry_response != 'yes' and retry_response not in yes_synonyms.get("yes", []):
                                 print("Have a good day!")
                                 print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
-                                return  # Exit the function if the user chooses not to retry
-
-                            else:
-                                print()
-                                print("I'm sorry sir, I don't understand what you're saying, ")
-                                print("I hope you find what you're looking for elsewhere. Have a good day!")
-                                print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
-                                return  # Exit the function for any other response
+                                break
 
                     if response == 'hangup':
-                        print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
-                        exit()
-
-                    if pizza_type is None:
-                        continue  # Skip this iteration if pizza_type is None
+                        break
 
                     pizza_count = order_summary[pizza_type]["count"]
                     order_summary[pizza_type]["count"] = pizza_count + 1
@@ -183,7 +194,7 @@ def menu_pizza():
 
                         if extra_choices == "hangup":
                             print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
-                            exit()
+                            break
 
                         if not extra_choices:
                             break
@@ -205,8 +216,7 @@ def menu_pizza():
                             break
 
                     if response == 'hangup':
-                        print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
-                        exit()
+                        break
 
                     # Check if the user entered invalid extra choices twice and exit if so
                     if invalid_extra_choices_count == 2:
@@ -219,6 +229,28 @@ def menu_pizza():
             if valid_order:
                 valid_order = False  # Reset the valid_order flag after adding pizzas
 
+        elif quantity_response in ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"]:
+            # Map word quantity responses to numbers
+            quantity = words_to_numbers(quantity_response)
+            print()
+            print(f"So that's {quantity} pizza(s).")
+            print()
+            print("Program continues...")
+            return  # Exit the function and return to the main loop
+
+        if first_mistake:
+            print()
+            print("I'm sorry, I don't understand.")
+            print("Oh yes, I should probably let you know, at Big Ben's Pizzeria,")
+            print("we have a policy of only allowing at most, 10 pizzas per order")
+            first_mistake = False  # Set the flag to False after the first mistake
+
+        else:
+            print()
+            print("I'm sorry sir I don't understand what you're saying, ")
+            print("I hope you find what you're looking elsewhere. Have a good day!")
+            print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
+            return  # Exit the function and return to the main loop
         if order_summary:
             print()
             print("Okay, so that's...")
@@ -261,7 +293,7 @@ def menu_pizza():
                     break
                 elif confirmation == 'hangup':
                     print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
-                    exit()
+                    return
                 else:
                     final_confirmation = input("\nSorry, I don't understand what you're trying to say here."
                                                " Please answer with 'yes' or 'no' ").lower()

@@ -9,9 +9,6 @@ while True:
         break
 
     if response == 'yes':
-
-        print()
-        print()
         print()
         print("Program continues...")
         break
@@ -25,7 +22,6 @@ while True:
             break
 
         if followup_response == 'yes':
-            print()
             print()
             print("Program continues...")
             break

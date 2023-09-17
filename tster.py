@@ -1,3 +1,20 @@
+def words_to_numbers(word):
+    # Define a dictionary to map words to numbers
+    word_to_number = {
+        "one": 1,
+        "two": 2,
+        "three": 3,
+        "four": 4,
+        "five": 5,
+        "six": 6,
+        "seven": 7,
+        "eight": 8,
+        "nine": 9,
+        "ten": 10,
+    }
+    # Try to convert the word to a number, default to 0 if not found
+    return word_to_number.get(word.lower(), 0)
+
 # Initialize the flags
 
 
@@ -34,6 +51,7 @@ extra_toppings_menu = {
     "3": "Aioli +$0.50",
     "4": "BBQ sauce +$0.50",
     "5": "Tomato sauce +$0.50",
+    "": ""
 }
 
 # Function to convert numbers to words
@@ -77,7 +95,7 @@ def name_payment():
         if payment_response == 'cash' or payment_response == 'card':
             print()
             print("Awesome,")
-            print("Okay, " + name_response + ", your order will be ready in about 15-20 minutes")
+            print(f"Okay, {name_response}, your order will be ready in about 15-20 minutes")
             print("See you soon!")
             print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
             exit()
@@ -181,7 +199,7 @@ def sides_order():
                 print("Okay, you selected the following sides and drinks:")
                 for item, quantity in order_summary.items():
                     quantity_words = number_to_words(quantity)
-                    print(quantity_words + " " + item)
+                    print(f"{quantity_words} {item}")
                 print()
                 total_items = sum(order_summary.values())
                 print(f"For a total of {number_to_words(total_items)} items")
@@ -243,7 +261,7 @@ def sides_order():
 
 def menu_pizza():
 
-    global order_placed, order_summary, menu_displayed
+    global order_placed, order_summary, menu_displayed, valid_order
 
     first_mistake = True  # Initialize first_mistake to True before the loop
 
@@ -304,7 +322,11 @@ def menu_pizza():
                     print("┖━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
                     menu_displayed = True
 
+                valid_order = True  # Flag to check if the order is valid
+
                 for i in range(quantity):
+
+                    pizza_type = None  # Initialize pizza_type for this iteration
 
                     while True:
                         print()
@@ -367,6 +389,7 @@ def menu_pizza():
 
                         if extra_choices == "":
                             # User entered no extra toppings, break out of the loop
+                            selected_toppings = []  # Initialize an empty list
                             break
 
                         selected_toppings = []
@@ -395,6 +418,17 @@ def menu_pizza():
                         print("I hope you find what you're looking elsewhere. Have a good day!")
                         print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
                         return
+
+            if valid_order:
+                valid_order = False  # Reset the valid_order flag after adding pizzas
+
+        elif quantity_response in ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"]:
+
+            # Map word quantity responses to numbers
+
+            quantity = words_to_numbers(quantity_response)
+
+            print()
 
         else:
             print()
@@ -473,10 +507,10 @@ def menu_pizza():
 
 
 while True:
-    print("(If you want to hang up, simply say 'hangup')")
+    print("( 𝘐𝘧 𝘺𝘰𝘶 𝘸𝘢𝘯𝘵 𝘵𝘰  𝘩𝘢𝘯𝘨 𝘶𝘱 𝘵𝘩𝘦 𝘤𝘢𝘭𝘭, 𝘴𝘪𝘮𝘱𝘭𝘺 𝘴𝘢𝘺 '𝘩𝘢𝘯𝘨𝘶𝘱' ) ")
     print()
-    response = input("Hello, thank you for calling Big Ben's Pizzeria. Would you like to order some pizza? "
-                     "(yes/no): ").lower()
+    response = input("Hello, thank you for calling Big Ben's Pizzeria. Would you like to order some pizza? (yes/no): "
+                     "").lower()
 
     if response == 'hangup':
         print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
@@ -493,10 +527,10 @@ while True:
             print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
             exit()
 
-        if followup_response == 'yes' or followup_response in yes_synonyms.get("yes", []):
+        if followup_response == 'yes' or response in yes_synonyms.get("yes", []):
             menu_pizza()
 
-        elif followup_response == 'no' or followup_response in no_synonyms.get("no", []):
+        elif followup_response == 'no' or response in no_synonyms.get("no", []):
             print("Have a good day, sir")
             print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
             exit()
@@ -512,10 +546,10 @@ while True:
         if yes_or_no_response == 'hangup':
             print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
             exit()
-        if yes_or_no_response == 'yes' or yes_or_no_response in yes_synonyms.get("yes", []):
+        if yes_or_no_response == 'yes' or response in yes_synonyms.get("yes", []):
             menu_pizza()
 
-        elif yes_or_no_response == 'no' or yes_or_no_response in no_synonyms.get("no", []):
+        elif yes_or_no_response == 'no' or response in no_synonyms.get("no", []):
             print()
             print("Please don't waste my time sir, have a good rest of your day.")
             print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")

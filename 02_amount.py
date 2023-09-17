@@ -17,9 +17,11 @@ def words_to_numbers(word):
 
 
 def order_pizza():
+    first_mistake = True  # Flag to track the first mistake
+
     while True:
         print()
-        quantity_response = input("So how many are you looking to get today then? ").lower()
+        quantity_response = input("So how many pizza/s are you looking to get today then? (use numbers only) ").lower()
 
         if quantity_response.isdigit():
             quantity = int(quantity_response)
@@ -34,8 +36,7 @@ def order_pizza():
             print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
             return  # Exit the function and return to the main loop
 
-        elif quantity_response.lower() in ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
-                                           "ten"]:
+        elif quantity_response in ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"]:
             # Map word quantity responses to numbers
             quantity = words_to_numbers(quantity_response)
             print()
@@ -44,11 +45,19 @@ def order_pizza():
             print("Program continues...")
             return  # Exit the function and return to the main loop
 
-        print()
-        print("I'm sorry, I don't understand.")
-        print(
-            "Oh yes, I should probably let you know that unfortunately, at Big Ben's Pizzeria, we have a policy of "
-            "only doing 10 pizzas per order max")
+        if first_mistake:
+            print()
+            print("I'm sorry, I don't understand.")
+            print("Oh yes, I should probably let you know, at Big Ben's Pizzeria,")
+            print("we have a policy of only allowing at most, 10 pizzas per order")
+            first_mistake = False  # Set the flag to False after the first mistake
+
+        else:
+            print()
+            print("I'm sorry sir I don't understand what you're saying, ")
+            print("I hope you find what you're looking elsewhere. Have a good day!")
+            print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
+            return  # Exit the function and return to the main loop
 
 
 order_pizza()
