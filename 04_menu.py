@@ -176,7 +176,7 @@ def menu_pizza():
                         prompt = (
                             "And what are the numbers of the extra toppings you want? (or press Enter for none) "
                             if invalid_extra_choices_count == 0
-                            else "\nSorry, could you try that again? "
+                            else "\nSorry, could you try those numbers again? "
                         )
 
                         extra_choices = input(prompt).strip()

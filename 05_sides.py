@@ -96,12 +96,19 @@ def sides_order():
                         order_invalid = True
                         break
                     retry = input("Try again? (yes/no) ").lower()
+
                     if retry == 'no' or retry in no_synonyms.get("no", []):
-                        print("Hanging up.")
-                        order_invalid = True
-                        break
-                    elif retry != 'yes' and retry not in yes_synonyms.get("yes", []):
-                        print("Nice try")
+                        print("Have a good day!")
+                        print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
+                        exit()
+                    if retry == 'yes' or retry in yes_synonyms.get("yes", []):
+                        print("Lets try that again")
+                        continue
+                    else:
+                        print()
+                        print("I'm sorry, I don't understand what you're saying, ")
+                        print("I hope you find what you're looking elsewhere. Have a good day!")
+                        print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
                         exit()
                 else:
                     break

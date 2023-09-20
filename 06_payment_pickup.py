@@ -3,6 +3,9 @@ def name_payment():
         print()
         name_response = input("Cool, and what's the name for the pick-up? ")
         print()
+        if name_response == 'hangup':
+            print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
+            exit()
 
         payment_response = input("And are you paying with cash or card? ")
         print()
@@ -30,6 +33,7 @@ def name_payment():
                 print("I hope you find what you're looking for elsewhere. Have a good day!")
                 print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
                 exit()
+
 
 # Call the name_payment function to start the process
 
