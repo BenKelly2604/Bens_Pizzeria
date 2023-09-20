@@ -1,3 +1,95 @@
+# Define global variables
+
+yes_synonyms = {
+    "yes": ["sure", "absolutely", "okay", "fine", "yea", "yeah", "yep", "yup", "totally", "of course", "indeed",
+            "mhm", "ok", "alright", "y"]
+}
+no_synonyms = {
+    "no": ["nope", "nah", "never", "nay", "n"]
+}
+
+pizza_menu = {
+    "1": "Ham and cheese",
+    "2": "Margherita",
+    "3": "Pepperoni",
+    "4": "Vegetarian",
+    "5": "Beef and Onion",
+    "6": "Meat Lovers",
+    "ham and cheese": "Ham and cheese",
+    "margherita": "Margherita",
+    "pepperoni": "Pepperoni",
+    "vegetarian": "Vegetarian",
+    "beef and onion": "Beef and Onion",
+    "meat lovers": "Meat Lovers",
+}
+
+extra_toppings_menu = {
+    "0": " ",
+    "1": "Extra cheese +$1.20",
+    "2": "Stuffed crust +$2",
+    "3": "Aioli +$0.50",
+    "4": "BBQ sauce +$0.50",
+    "5": "Tomato sauce +$0.50",
+}
+
+side_menu = {
+    "1": "Crispy Fries",
+    "2": "Loaded Wedges",
+    "3": "Garlic Bread",
+    "4": "Vegan Garlic Bread",
+    "5": "Cheesy Scrolls",
+    "6": "Green salad",
+    "7": "Orange juice",
+    "8": "Fizzy drink",
+    "9": "Iced coffee",
+    "10": "Water Bottle",
+    "11": "Chocolate Milk",
+    "12": "Energy Drink",
+}
+
+# Initialize the flags
+order_placed = False
+order_summary = {}
+menu_displayed = False
+consecutive_invalid_responses = 0
+
+
+def calculate_total_cost(order_summary):
+    pizza_prices = {
+        "Ham and cheese": 12.00,
+        "Margherita": 12.00,
+        "Pepperoni": 12.00,
+        "Vegetarian": 13.00,
+        "Beef and Onion": 13.00,
+        "Meat Lovers": 14.00,
+    }
+
+    side_drink_prices = {
+        "Crispy Fries": 6.00,
+        "Loaded Wedges": 8.00,
+        "Garlic Bread": 5.00,
+        "Vegan Garlic Bread": 6.00,
+        "Cheesy Scrolls": 6.00,
+        "Green salad": 7.00,
+        "Orange juice": 4.00,
+        "Fizzy drink": 4.00,
+        "Iced coffee": 6.00,
+        "Water Bottle": 3.00,
+        "Chocolate Milk": 5.00,
+        "Energy Drink": 4.00,
+    }
+
+    total_cost = 0.0
+
+    for item_name, item_data in order_summary.items():
+        if item_name in pizza_prices:
+            total_cost += pizza_prices[item_name] * item_data["count"]
+        elif item_name in side_drink_prices:
+            total_cost += side_drink_prices[item_name] * item_data["count"]
+
+    return total_cost
+
+
 def number_to_words(num):
     units = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
     if 1 <= num <= 9:
@@ -16,20 +108,47 @@ def name_payment():
         print()
 
         if payment_response == 'cash' or payment_response == 'card':
-            print()
-            print("Awesome,")
-            print("Okay, " + name_response + ", your order will be ready in about 15-20 minutes")
-            print("See you soon!")
+            # Calculate the total cost
+            total_cost = calculate_total_cost(order_summary)
+            print(f"Cool,")
+            # Display the summary of everything ordered
+            print("\nSo in total, you got")
+            for item, quantity in order_summary.items():
+                if type(quantity) == int:
+                    print(f"{quantity} x {item}")
+                elif type(quantity) == dict:
+                    print(f"{quantity['count']} x {item} with extra toppings {', '.join(quantity['extra_toppings'])}")
+
+            print("your total item count is", sum([quantity['count'] if type(quantity) == dict else quantity for
+                                                   quantity in order_summary.values()]))
+            print("And finally you'll be paying with " + payment_response)
+            print("So " + name_response + ", your order will be ready in about 15-20 minutes")
+            print(f"Oh and before I forget, your total cost is ${total_cost:.2f}")
+            print("I'll see you soon!")
             print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
             exit()
         else:
             final_payment_response = input("Sorry, is that cash or card that you'll be paying for the pizza with? ")
 
-            if final_payment_response == 'cash' or final_payment_response == 'card':
-                print()
-                print("Awesome,")
-                print(f"Okay, {name_response}, your order will be ready in about 15-20 minutes")
-                print("See you soon!")
+            if final_payment_response == 'cash' or payment_response == 'card':
+                # Calculate the total cost
+                total_cost = calculate_total_cost(order_summary)
+                print(f"Cool,")
+                # Display the summary of everything ordered
+                print("\nSo in total, you got")
+                for item, quantity in order_summary.items():
+                    if type(quantity) == int:
+                        print(f"{quantity} x {item}")
+                    elif type(quantity) == dict:
+                        print(
+                            f"{quantity['count']} x {item} with extra toppings {', '.join(quantity['extra_toppings'])}")
+
+                print("your total item count is", sum([quantity['count'] if type(quantity) == dict else quantity for
+                                                       quantity in order_summary.values()]))
+                print("And finally you'll be paying with " + payment_response)
+                print("So " + name_response + ", your order will be ready in about 15-20 minutes")
+                print(f"Oh and before I forget, your total cost is ${total_cost:.2f}")
+                print("I'll see you soon!")
                 print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
                 exit()
             else:
@@ -413,62 +532,6 @@ def menu_pizza():
             first_mistake = False  # Set the flag to False after the first mistake
 
 # Main routine
-
-
-yes_synonyms = {
-    "yes": ["sure", "absolutely", "okay", "fine", "yea", "yeah", "yep", "yup", "totally", "of course", "indeed",
-            "mhm", "ok", "alright", "y"]
-}
-no_synonyms = {
-    "no": ["nope", "nah", "never", "nay", "n"]
-}
-
-pizza_menu = {
-    "1": "Ham and cheese",
-    "2": "Margherita",
-    "3": "Pepperoni",
-    "4": "Vegetarian",
-    "5": "Beef and Onion",
-    "6": "Meat Lovers",
-    "ham and cheese": "Ham and cheese",
-    "margherita": "Margherita",
-    "pepperoni": "Pepperoni",
-    "vegetarian": "Vegetarian",
-    "beef and onion": "Beef and Onion",
-    "meat lovers": "Meat Lovers",
-}
-
-extra_toppings_menu = {
-    "0": " ",
-    "1": "Extra cheese +$1.20",
-    "2": "Stuffed crust +$2",
-    "3": "Aioli +$0.50",
-    "4": "BBQ sauce +$0.50",
-    "5": "Tomato sauce +$0.50",
-}
-
-side_menu = {
-    "1": "Crispy Fries",
-    "2": "Loaded Wedges",
-    "3": "Garlic Bread",
-    "4": "Vegan Garlic Bread",
-    "5": "Cheesy Scrolls",
-    "6": "Green salad",
-    "7": "Orange juice",
-    "8": "Fizzy drink",
-    "9": "Iced coffee",
-    "10": "Water Bottle",
-    "11": "Chocolate Milk",
-    "12": "Energy Drink",
-}
-
-# Initialize the flags
-order_placed = False
-order_summary = {}
-menu_displayed = False
-consecutive_invalid_responses = 0
-
-# Function to convert numbers to words
 
 
 while True:

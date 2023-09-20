@@ -78,6 +78,19 @@ def name_payment():
             print()
             print("Awesome,")
             print("Okay, " + name_response + ", your order will be ready in about 15-20 minutes")
+
+            # Display the summary of everything ordered
+            print("\nSo in total, you got")
+            for item, quantity in order_summary.items():
+                if type(quantity) == int:
+                    print(f"{quantity} x {item}")
+                elif type(quantity) == dict:
+                    print(f"{quantity['count']} x {item} with extra toppings {', '.join(quantity['extra_toppings'])}")
+
+            print("your total item count is", sum([quantity['count'] if type(quantity) == dict else quantity for
+                                                   quantity in order_summary.values()]))
+            print("And finally you'll be paying with " + payment_response)
+
             print("See you soon!")
             print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
             exit()
@@ -88,6 +101,22 @@ def name_payment():
                 print()
                 print("Awesome,")
                 print(f"Okay, {name_response}, your order will be ready in about 15-20 minutes")
+
+                # Display the summary of everything ordered
+                print("\nSo in total you got...")
+                for item, quantity in order_summary.items():
+                    if type(quantity) == int:
+                        print(f"{quantity} x {item}")
+                    elif type(quantity) == dict:
+                        print(
+                            f"{quantity['count']} x {item} with extra "
+                            f"toppings {', '.join(quantity['extra_toppings'])}")
+
+                print("So in total that's", sum([quantity['count'] if type(quantity) == dict else quantity
+                                                 for quantity in
+                                                order_summary.values()]))
+                print("And finally you'll be paying with" + final_payment_response)
+
                 print("See you soon!")
                 print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
                 exit()
@@ -97,6 +126,7 @@ def name_payment():
                 print("I hope you find what you're looking for elsewhere. Have a good day!")
                 print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
                 exit()
+
 
 # Call the name_payment function to start the process
 
@@ -162,12 +192,19 @@ def sides_order():
                         order_invalid = True
                         break
                     retry = input("Try again? (yes/no) ").lower()
+
                     if retry == 'no' or retry in no_synonyms.get("no", []):
-                        print("Hanging up.")
-                        order_invalid = True
-                        break
-                    elif retry != 'yes' and retry not in yes_synonyms.get("yes", []):
-                        print("Nice try")
+                        print("Have a good day!")
+                        print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
+                        exit()
+                    if retry == 'yes' or retry in yes_synonyms.get("yes", []):
+                        print("Lets try that again")
+                        continue
+                    else:
+                        print()
+                        print("I'm sorry, I don't understand what you're saying, ")
+                        print("I hope you find what you're looking elsewhere. Have a good day!")
+                        print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
                         exit()
                 else:
                     break
