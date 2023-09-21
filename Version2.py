@@ -53,18 +53,16 @@ order_summary = {}
 menu_displayed = False
 consecutive_invalid_responses = 0
 
-
-def calculate_total_cost(order_summary):
-    pizza_prices = {
+pizza_prices = {
         "Ham and cheese": 12.00,
         "Margherita": 12.00,
         "Pepperoni": 12.00,
         "Vegetarian": 13.00,
         "Beef and Onion": 13.00,
         "Meat Lovers": 14.00,
-    }
+}
 
-    side_drink_prices = {
+side_drink_prices = {
         "Crispy Fries": 6.00,
         "Loaded Wedges": 8.00,
         "Garlic Bread": 5.00,
@@ -77,17 +75,38 @@ def calculate_total_cost(order_summary):
         "Water Bottle": 3.00,
         "Chocolate Milk": 5.00,
         "Energy Drink": 4.00,
-    }
+}
 
+extra_toppings_price = {
+        "Extra cheese": 1.20,
+        "Stuffed crust": 2.00,
+        "Aioli": 0.50,
+        "BBQ sauce": 0.50,
+        "Tomato sauce": 0.50,
+}
+
+
+# Function to calculate the total cost based on the order summary
+def calculate_total_cost(order_summary):
     total_cost = 0.0
+    total_items = 0  # Initialize total_items to zero
 
     for item_name, item_data in order_summary.items():
         if item_name in pizza_prices:
             total_cost += pizza_prices[item_name] * item_data["count"]
+            total_items += item_data["count"]
         elif item_name in side_drink_prices:
-            total_cost += side_drink_prices[item_name] * item_data["count"]
+            if isinstance(item_data, dict):
+                total_cost += side_drink_prices[item_name] * item_data["count"]
+                total_items += item_data["count"]
+            else:
+                total_cost += side_drink_prices[item_name] * item_data  # Handle integer quantity
+                total_items += item_data  # Handle integer quantity
+        elif item_name in extra_toppings_price:
+            total_cost += extra_toppings_price[item_name] * item_data["count"]
+            total_items += item_data["count"]  # Increment total_items
 
-    return total_cost
+    return total_cost, total_items
 
 
 def number_to_words(num):
@@ -98,6 +117,9 @@ def number_to_words(num):
 # Function for name and payment
 
 
+# Function for name and payment
+# Function for name and payment
+# Function for name and payment
 def name_payment():
     while True:
         print()
@@ -107,61 +129,66 @@ def name_payment():
         payment_response = input("And are you paying with cash or card? ")
         print()
 
-        if payment_response == 'cash' or payment_response == 'card':
-            # Calculate the total cost
-            total_cost = calculate_total_cost(order_summary)
-            print(f"Cool,")
-            # Display the summary of everything ordered
-            print("\nSo in total, you got")
-            for item, quantity in order_summary.items():
-                if type(quantity) == int:
-                    print(f"{quantity} x {item}")
-                elif type(quantity) == dict:
-                    print(f"{quantity['count']} x {item} with extra toppings {', '.join(quantity['extra_toppings'])}")
-
-            print("your total item count is", sum([quantity['count'] if type(quantity) == dict else quantity for
-                                                   quantity in order_summary.values()]))
-            print("And finally you'll be paying with " + payment_response)
-            print("So " + name_response + ", your order will be ready in about 15-20 minutes")
-            print(f"Oh and before I forget, your total cost is ${total_cost:.2f}")
-            print("I'll see you soon!")
-            print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
-            exit()
+        if payment_response in ['cash', 'card']:
+            break
         else:
             final_payment_response = input("Sorry, is that cash or card that you'll be paying for the pizza with? ")
-
-            if final_payment_response == 'cash' or payment_response == 'card':
-                # Calculate the total cost
-                total_cost = calculate_total_cost(order_summary)
-                print(f"Cool,")
-                # Display the summary of everything ordered
-                print("\nSo in total, you got")
-                for item, quantity in order_summary.items():
-                    if type(quantity) == int:
-                        print(f"{quantity} x {item}")
-                    elif type(quantity) == dict:
-                        print(
-                            f"{quantity['count']} x {item} with extra toppings {', '.join(quantity['extra_toppings'])}")
-
-                print("your total item count is", sum([quantity['count'] if type(quantity) == dict else quantity for
-                                                       quantity in order_summary.values()]))
-                print("And finally you'll be paying with " + payment_response)
-                print("So " + name_response + ", your order will be ready in about 15-20 minutes")
-                print(f"Oh and before I forget, your total cost is ${total_cost:.2f}")
-                print("I'll see you soon!")
-                print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
-                exit()
-            else:
+            if final_payment_response not in ['cash', 'card']:
                 print()
                 print("I'm very sorry, I don't understand what you're saying, ")
                 print("I hope you find what you're looking for elsewhere. Have a good day!")
                 print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
                 exit()
 
+    # Calculate the total cost and total items
+    total_cost, total_items = calculate_total_cost(order_summary)
+
+    print()
+    print("Awesome,")
+    print(f"Okay, {name_response}, your order will be ready in about 15-20 minutes")
+
+    # Initialize counters for pizzas and sides/drinks
+    pizza_count = 0
+    sides_drinks_count = 0
+
+    # Display the summary of everything ordered
+    print("\nSo in total, you got:")
+    for item, quantity in order_summary.items():
+        if type(quantity) == int:
+            if item.lower() == 'sides' or item.lower() == 'drinks':
+                sides_drinks_count += quantity
+            else:
+                print(f"{quantity} x {item}")
+        elif type(quantity) == dict:
+            if 'count' in quantity and 'extra_toppings' in quantity:
+                pizza_count += quantity['count']
+                toppings = ', '.join(quantity['extra_toppings'])
+                print(f"{quantity['count']} x {item} with extra toppings: {toppings}")
+        elif type(quantity) == list:
+            for pizza in quantity:
+                pizza_count += pizza['count']
+                print(f"{pizza['count']} x {item} - {pizza['type']}")
+
+    # Print the quantities of pizzas and sides/drinks
+    if pizza_count > 0:
+        print(f"Total pizza count: {pizza_count}")
+
+    if sides_drinks_count > 0:
+        print(f"Total sides/drinks count: {sides_drinks_count}")
+
+    print(f"Total item count: {total_items}")
+    print("And finally, you'll be paying with " + payment_response)
+    print(f"Oh and before I forget, your total cost is ${total_cost:.2f}")
+    print("See you soon!")
+    print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
+    exit()
+
+
 # Function for sides and drinks order
 
 
 def sides_order():
+    global order_summary
     while True:
         print()
         yes_no_response = input("Lastly, would you like any sides or drinks today? ").lower()
@@ -174,8 +201,8 @@ def sides_order():
             name_payment()
 
         if yes_no_response == 'yes' or yes_no_response in yes_synonyms.get("yes", []):
-            order_summary = {}  # Clear order_summary for each new order
-
+            # Clear order_summary for each new order
+            order_summary = {}
             # Display the menu when it's not displayed
             print()
             print("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┑   ┏━━━━━━━━━━━━━━━━━━━━━━━━━━┑")
@@ -184,7 +211,7 @@ def sides_order():
             print("┃ 1. Crispy Fries        $6   ┃   ┃  7. Orange juice     $4  ┃")
             print("┃ 2. Loaded Wedges       $8   ┃   ┃  8. Fizzy drink      $4  ┃")
             print("┃ 3. Garlic Bread        $5   ┃   ┃  9. Iced coffee      $6  ┃")
-            print("┃ 4. Vegan Garlic Bread  $6   ┃   ┃ 10. Water bottle     $3  ┃")
+            print("┃ 4. Vegan Garlic Bread  $6   ┃   ┃ 10. Water Bottle     $3  ┃")
             print("┃ 5. Cheesy Scrolls      $6   ┃   ┃ 11. Chocolate Milk   $5  ┃")
             print("┃ 6. Green salad         $7   ┃   ┃ 12. Energy Drink     $4  ┃")
             print("┖━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛   ┖━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
@@ -271,7 +298,7 @@ def sides_order():
                         else:
                             print()
                             print("I'm very sorry, I don't understand what you're saying, ")
-                            print("I hope you find what you're looking elsewhere. Have a good day!")
+                            print("I hope you find what you're looking for elsewhere. Have a good day!")
                             print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
                             exit()
         else:
@@ -298,6 +325,7 @@ def sides_order():
                 print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
                 exit()
 
+
 # Function for pizza menu
 
 
@@ -313,7 +341,6 @@ def menu_pizza():
             if confirmation in ['yes'] + yes_synonyms.get("yes", []):
                 print()
                 sides_order()
-
             elif confirmation in ['no'] + no_synonyms.get("no", []):
                 print("\nSorry about that, let's try that again")
                 order_summary.clear()
@@ -327,7 +354,6 @@ def menu_pizza():
                 if final_confirmation == 'yes':
                     print()
                     sides_order()
-
                 elif final_confirmation == 'hangup':
                     print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
                     exit()
@@ -339,7 +365,7 @@ def menu_pizza():
                     exit()
 
         print()
-        quantity_response = input("So, how many are you looking to get today then? (use numbers 1-10) ").lower()
+        quantity_response = input("So, how many are you looking to get today then? ").lower()
 
         if quantity_response == "hangup":
             print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
@@ -365,7 +391,6 @@ def menu_pizza():
                     menu_displayed = True
 
                 for i in range(quantity):
-
                     while True:
                         print()
                         response = input(
@@ -454,7 +479,7 @@ def menu_pizza():
                         print("I'm sorry, I don't understand what you're saying, ")
                         print("I hope you find what you're looking elsewhere. Have a good day!")
                         print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
-                        exit()
+                        return
 
         else:
             print()
@@ -523,7 +548,7 @@ def menu_pizza():
                               "looking elsewhere. "
                               "Have a good day!")
                         print("*𝘊𝘢𝘭𝘭 𝘦𝘯𝘥𝘦𝘥*")
-                        exit()
+                        return
         if first_mistake:
             print()
             print("I'm sorry, I don't understand.")
